@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: { 'blob': 'blob 10s infinite' },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        
+        @keyframes float-slow { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+        @keyframes float-slower { 0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); } 50% { transform: translateY(15px) translateX(10px) rotate(-5deg); } }
+        @keyframes float-reverse { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(20px) rotate(-3deg); } }
+
+        .animate-float-slow { animation: float-slow 15s ease-in-out infinite; }
+        .animate-float-slower { animation: float-slower 20s ease-in-out infinite; }
+        .animate-float-reverse { animation: float-reverse 18s ease-in-out infinite; }
+
+        .bg-icon {
+            position: absolute;
+            color: rgba(148, 163, 184, 0.15);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+
+    <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none">
+        <i class="fab fa-js bg-icon text-5xl md:text-7xl top-5 left-5 md:top-10 md:left-10 animate-float-slow"></i>
+        <i class="fab fa-python bg-icon text-4xl md:text-6xl top-20 left-1/4 animate-float-reverse"></i>
+        <i class="fab fa-react bg-icon text-5xl md:text-7xl top-10 right-5 md:top-20 md:right-20 animate-float-slower"></i>
+        <i class="fab fa-node-js bg-icon text-4xl md:text-5xl top-40 right-[30%] animate-float-slow"></i>
+        <i class="fab fa-html5 bg-icon text-4xl md:text-6xl bottom-20 left-5 md:bottom-32 md:left-20 animate-float-slower"></i>
+        <i class="fab fa-css3-alt bg-icon text-3xl md:text-5xl bottom-10 left-[40%] animate-float-reverse"></i>
+        <i class="fab fa-docker bg-icon text-5xl md:text-7xl bottom-10 right-5 md:bottom-20 md:right-10 animate-float-slow"></i>
+        <i class="fas fa-code bg-icon text-2xl md:text-4xl top-1/2 left-1/2 opacity-10 animate-float-slower"></i>
+    </div>
+
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-0 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
+        <div class="absolute bottom-0 right-1/4 w-64 h-64 md:w-96 md:h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <div class="glass-card w-full max-w-sm p-6 md:p-8 rounded-3xl mx-4">
+        <div class="text-center mb-6 md:mb-8">
+            <div class="w-14 h-14 md:w-16 md:h-16 bg-slate-900 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-slate-300 mb-4">
+                <i class="fas fa-fingerprint text-white text-2xl md:text-3xl"></i>
+            </div>
+            <h1 class="text-xl md:text-2xl font-bold text-slate-800">Izan Access</h1>
+            <p class="text-slate-500 text-xs md:text-sm">Masuk untuk mengelola database</p>
+        </div>
+
+        <div class="space-y-4 md:space-y-5">
+            <input type="text" id="username" placeholder="Username" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm md:text-base">
+            
+            <div class="relative">
+                <input type="password" id="password" placeholder="Password" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all pr-12 text-sm md:text-base">
+                <button type="button" onclick="togglePassword()" class="absolute right-3 top-3 text-slate-400 hover:text-indigo-600 transition-colors">
+                    <i class="fas fa-eye" id="eyeIcon"></i>
+                </button>
+            </div>
+            
+            <button onclick="handleLogin()" id="btnLogin" class="w-full bg-slate-900 text-white font-bold py-3 md:py-3.5 rounded-xl shadow-lg hover:bg-slate-800 transition-all transform active:scale-95 text-sm md:text-base">
+                MASUK DASHBOARD
+            </button>
+        </div>
+    </div>
+
+    <div class="absolute bottom-6 w-full text-center z-20">
+        <p class="text-slate-500 text-xs font-medium opacity-80">
+            &copy; 2026 Izan Dev - Izan DataBase Manager
+        </p>
+    </div>
+
+    <script src="setting.js"></script>
+    <script>
+        function togglePassword() {
+            const passField = document.getElementById("password");
+            const eyeIcon = document.getElementById("eyeIcon");
+            if (passField.type === "password") {
+                passField.type = "text";
+                eyeIcon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                passField.type = "password";
+                eyeIcon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+
+        async function handleLogin() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const btn = document.getElementById('btnLogin');
+
+            if (!u || !p) return alert("⚠️ Isi Username & Password!");
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+            btn.disabled = true;
+
+            try {
+                const targetUrl = getApiUrl(CONFIG.USER_FILE);
+                const res = await axios.get(targetUrl + '?t=' + Date.now(), {
+                    headers: { Authorization: `token ${CONFIG.TOKEN}` }
+                });
+                const users = JSON.parse(atob(res.data.content));
+                const found = users.find(user => user.username === u && user.password === p);
+
+                if (found) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('username', found.username);
+                    localStorage.setItem('role', found.role);
+                    window.location.href = 'index.html';
+                } else {
+                    alert("Username atau Password Salah!");
+                }
+            } catch (e) {
+                if(e.response && e.response.status === 401) alert(" Token GitHub Expired!");
+                else alert(" Error: " + e.message);
+            } finally {
+                btn.innerHTML = 'MASUK DASHBOARD';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
